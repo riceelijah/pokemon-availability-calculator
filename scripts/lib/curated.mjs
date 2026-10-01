@@ -61,7 +61,11 @@ export const ONE_PER_SAVE_FORMS = {
 const NAVEL_ROCK = 'Navel Rock (Mystic Ticket, received after entering the Hall of Fame)';
 const BIRTH_ISLAND = 'Birth Island (Aurora Ticket, received after entering the Hall of Fame)';
 
+const GO_PARK = 'Transfer from Pokémon GO via the GO Park (Meltan from GO Mystery Boxes)';
+
 export const FORM_AVAILABILITY_OVERRIDES = {
+  meltan: { 'lets-go-pikachu': ['c', GO_PARK], 'lets-go-eevee': ['c', GO_PARK] },
+  melmetal: { 'lets-go-pikachu': ['c', 'Transfer from Pokémon GO via the GO Park (evolved in GO)'], 'lets-go-eevee': ['c', 'Transfer from Pokémon GO via the GO Park (evolved in GO)'] },
   lugia: { 'firered-switch': ['c', NAVEL_ROCK], 'leafgreen-switch': ['c', NAVEL_ROCK] },
   'ho-oh': { 'firered-switch': ['c', NAVEL_ROCK], 'leafgreen-switch': ['c', NAVEL_ROCK] },
   // In Gen 3, Deoxys takes Attack Forme in FireRed and Defense Forme in LeafGreen.
