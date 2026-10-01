@@ -8,6 +8,7 @@ Pick the Pokémon games you own (in the sidebar) and see every Pokémon **form**
   - Direct: Let's Go Pikachu/Eevee, Sword/Shield, Brilliant Diamond/Shining Pearl, Legends: Arceus, Scarlet/Violet, Legends: Z-A, Pokémon GO, Pokémon Champions
   - Via Pokémon Bank: X/Y, Omega Ruby/Alpha Sapphire, Sun/Moon, Ultra Sun/Ultra Moon, Black/White, Black 2/White 2, Virtual Console Red/Blue/Yellow/Gold/Silver/Crystal
   - Via the legacy chain (Pal Park / Poké Transfer): Diamond/Pearl/Platinum, HeartGold/SoulSilver, Ruby/Sapphire/Emerald, FireRed/LeafGreen
+  - Also listed: the 2026 Nintendo Switch release of FireRed/LeafGreen (no HOME link announced), including the Lugia, Ho-Oh and Deoxys encounters it unlocks after the Hall of Fame
 - **Every form is its own entry** (1,500 total): regional forms, alternate forms (Rotom, Deoxys, genders…), cosmetic forms (Unown, Vivillon, Alcremie, Furfrou…), battle-only forms (Megas, Gigantamax, Zen Mode…) and event/special forms (Partner Pikachu, Pikachu caps…).
 - **Breeding**: in games with breeding, owning an evolved Pokémon makes its earlier stages obtainable (hatch, then evolve).
 - **Labels**: *1 per save*, *Champions* (usable in Pokémon Champions) and *Recruitable* (has appeared in a Champions Recruit Ranch roster; "past roster" if not in the current one).
