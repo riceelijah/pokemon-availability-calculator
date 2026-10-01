@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokémon Availability Calculator</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Pokémon Availability Calculator</h1>
+      <p>Select the games you own to see which Pokémon you can obtain and where.</p>
+
+      <section aria-labelledby="games-heading">
+        <h2 id="games-heading">Owned Games</h2>
+        <div id="game-list"></div>
+      </section>
+
+      <section aria-labelledby="results-heading">
+        <h2 id="results-heading">Obtainable Pokémon</h2>
+        <p id="result-summary">Choose one or more games to begin.</p>
+        <table id="results-table" hidden>
+          <thead>
+            <tr>
+              <th>Pokémon</th>
+              <th>Where to Find</th>
+            </tr>
+          </thead>
+          <tbody id="results-body"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
