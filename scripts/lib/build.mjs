@@ -46,6 +46,7 @@ export function buildDataset(sources) {
 
   applyGameLists(forms, sources.gameLists, sources.homeIcons);
   applySerebiiGameAudits(forms, sources.serebiiGames);
+  applyHomeGifts(forms, sources.homeGifts, sources.homeIcons);
   applySvExclusives(forms, sources.svExclusives);
   fillBattleForms(forms, ['scarlet', 'violet', 'legends-z-a']);
   applyBreeding(forms, sources.species);
@@ -459,10 +460,14 @@ function applyBreeding(forms, speciesPages) {
 
 function onePerSaveGames(form, page) {
   const games = new Set(ONE_PER_SAVE_FORMS[form.id] || []);
+  // HOME gifts can only be claimed once per HOME account.
+  if (form.avail.home?.[0] === 'c') {
+    games.add('home');
+  }
   const special = LEGENDARY.has(form.num) || MYTHICAL.has(form.num) || ULTRA_BEAST.has(form.num) || ONE_OFF_PARADOX.has(form.num);
   if (special && form.num !== 489 && (page.eggGroups.includes('Undiscovered') || form.num === 490)) {
     for (const [gameId, [status, text]] of Object.entries(form.avail)) {
-      if (gameId === 'go' || gameId === 'champions') {
+      if (gameId === 'go' || gameId === 'champions' || gameId === 'home') {
         continue;
       }
       if (status === 'c' && !REPEATABLE_LOCATION.test(text)) {
@@ -632,6 +637,32 @@ function applySerebiiGameAudits(forms, games = []) {
 }
 
 const FOSSILS = new Set([138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883]);
+
+// Pokémon HOME gift distributions (Serebii): each is one per HOME account.
+// Gifts with a date range that has ended are past events.
+function applyHomeGifts(forms, gifts = [], homeIcons, now = new Date()) {
+  const byNum = groupByNum(forms);
+  for (const gift of gifts) {
+    const sentences = gift.about.split(/(?<=\.)\s+/).filter(Boolean);
+    const how = sentences.find((t) => /\b(if you|complet|deposit|transfer|by )\b/i.test(t)) || sentences[0] || '';
+    const range = gift.date.split(/\s+-\s+/);
+    const ended = range.length === 2 && Date.parse(range[1].replace(/(\d)(st|nd|rd|th)/, '$1')) < now.getTime();
+    const text = `HOME gift "${gift.title}" (${gift.date})${how ? `: ${how}` : ''}`;
+    for (const row of gift.pokemon) {
+      const candidates = byNum.get(row.num) || [];
+      const matches = row.code
+        ? candidates.filter((f) => iconCode(f, homeIcons) === row.code)
+        : candidates.filter((f) => f.isDefault).slice(0, 1);
+      for (const form of matches) {
+        // A gift you can still claim beats a past one; otherwise keep the
+        // most recent (Serebii lists newest first).
+        if (form.avail.home?.[0] === 'c') continue;
+        if (form.avail.home && ended) continue;
+        form.avail.home = [ended ? 'e' : 'c', ended ? `Past ${text}` : text];
+      }
+    }
+  }
+}
 
 // Battle-only forms of Pokémon that only became obtainable through the
 // Serebii lists above (e.g. Terapagos' Terastal Form, Z-A Megas).

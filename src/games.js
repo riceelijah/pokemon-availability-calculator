@@ -19,11 +19,6 @@ export const GAME_GROUPS = [
     description: '3DS games and Virtual Console releases, moved with Poké Transporter / Pokémon Bank.'
   },
   {
-    id: 'switch-port',
-    name: 'Nintendo Switch re-releases',
-    description: 'FireRed & LeafGreen on Switch (2026). No Pokémon HOME link has been announced for these, so they are listed separately.'
-  },
-  {
     id: 'legacy',
     name: 'Via the legacy transfer chain',
     description: 'Original DS/GBA cartridges, moved forward with Pal Park and Poké Transfer.'
@@ -35,7 +30,7 @@ const MEGA_ORAS = [...MEGA_XY, 'beedrill', 'pidgeot', 'slowbro', 'steelix', 'sce
 const MEGA_LGPE = ['venusaur', 'charizard', 'blastoise', 'beedrill', 'pidgeot', 'alakazam', 'slowbro', 'gengar', 'kangaskhan', 'pinsir', 'gyarados', 'aerodactyl', 'mewtwo'];
 
 // Games without breeding: Gen 1, Let's Go, Legends: Arceus, Legends: Z-A, GO and Champions.
-const NO_BREEDING = new Set(['lets-go-pikachu', 'lets-go-eevee', 'legends-arceus', 'legends-z-a', 'go', 'champions', 'red', 'blue', 'yellow']);
+const NO_BREEDING = new Set(['home', 'lets-go-pikachu', 'lets-go-eevee', 'legends-arceus', 'legends-z-a', 'go', 'champions', 'red', 'blue', 'yellow']);
 
 function game(id, name, group, gen, pdb, dex, extra = {}) {
   return { id, name, group, gen, pdb, dex, breeding: !NO_BREEDING.has(id), ...extra };
@@ -60,8 +55,14 @@ export const GAMES = [
   game('scarlet', 'Scarlet', 'direct', 9, 'scarlet', ['scarlet-violet', 'scarlet-violet/teal-mask', 'scarlet-violet/indigo-disk']),
   game('violet', 'Violet', 'direct', 9, 'violet', ['scarlet-violet', 'scarlet-violet/teal-mask', 'scarlet-violet/indigo-disk']),
   game('legends-z-a', 'Legends: Z-A', 'direct', 9, 'legends-z-a', ['legends-z-a', 'legends-z-a/mega-dimension'], ZA),
+  // FireRed & LeafGreen on Switch (2026) gained a HOME link in October 2026.
+  // Same encounters as the GBA games, plus the Mystic/Aurora Tickets given
+  // after the Hall of Fame.
+  game('firered-switch', 'FireRed (Switch)', 'direct', 3, 'firered', ['firered-leafgreen']),
+  game('leafgreen-switch', 'LeafGreen (Switch)', 'direct', 3, 'leafgreen', ['firered-leafgreen']),
   game('go', 'Pokémon GO', 'direct', 0, null, [], { source: 'serebii-go' }),
   game('champions', 'Pokémon Champions', 'direct', 0, null, [], { source: 'serebii-champions' }),
+  game('home', 'Pokémon HOME (gifts)', 'direct', 0, null, [], { source: 'serebii-home' }),
 
   // Via Pokémon Bank
   game('x', 'X', 'bank', 6, 'x', ['x-y'], XY),
@@ -82,11 +83,6 @@ export const GAMES = [
   game('gold', 'Gold (Virtual Console)', 'bank', 2, 'gold', ['gold-silver-crystal']),
   game('silver', 'Silver (Virtual Console)', 'bank', 2, 'silver', ['gold-silver-crystal']),
   game('crystal', 'Crystal (Virtual Console)', 'bank', 2, 'crystal', ['gold-silver-crystal']),
-
-  // Nintendo Switch re-release of the GBA games (same encounters, plus the
-  // Mystic/Aurora Tickets given after the Hall of Fame).
-  game('firered-switch', 'FireRed (Switch)', 'switch-port', 3, 'firered', ['firered-leafgreen']),
-  game('leafgreen-switch', 'LeafGreen (Switch)', 'switch-port', 3, 'leafgreen', ['firered-leafgreen']),
 
   // Legacy chain
   game('diamond', 'Diamond', 'legacy', 4, 'diamond', ['diamond-pearl']),
