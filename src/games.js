@@ -19,6 +19,11 @@ export const GAME_GROUPS = [
     description: '3DS games and Virtual Console releases, moved with Poké Transporter / Pokémon Bank.'
   },
   {
+    id: 'switch-port',
+    name: 'Nintendo Switch re-releases',
+    description: 'FireRed & LeafGreen on Switch (2026). No Pokémon HOME link has been announced for these, so they are listed separately.'
+  },
+  {
     id: 'legacy',
     name: 'Via the legacy transfer chain',
     description: 'Original DS/GBA cartridges, moved forward with Pal Park and Poké Transfer.'
@@ -78,6 +83,11 @@ export const GAMES = [
   game('silver', 'Silver (Virtual Console)', 'bank', 2, 'silver', ['gold-silver-crystal']),
   game('crystal', 'Crystal (Virtual Console)', 'bank', 2, 'crystal', ['gold-silver-crystal']),
 
+  // Nintendo Switch re-release of the GBA games (same encounters, plus the
+  // Mystic/Aurora Tickets given after the Hall of Fame).
+  game('firered-switch', 'FireRed (Switch)', 'switch-port', 3, 'firered', ['firered-leafgreen']),
+  game('leafgreen-switch', 'LeafGreen (Switch)', 'switch-port', 3, 'leafgreen', ['firered-leafgreen']),
+
   // Legacy chain
   game('diamond', 'Diamond', 'legacy', 4, 'diamond', ['diamond-pearl']),
   game('pearl', 'Pearl', 'legacy', 4, 'pearl', ['diamond-pearl']),
@@ -87,8 +97,8 @@ export const GAMES = [
   game('ruby', 'Ruby', 'legacy', 3, 'ruby', ['ruby-sapphire-emerald']),
   game('sapphire', 'Sapphire', 'legacy', 3, 'sapphire', ['ruby-sapphire-emerald']),
   game('emerald', 'Emerald', 'legacy', 3, 'emerald', ['ruby-sapphire-emerald']),
-  game('firered', 'FireRed', 'legacy', 3, 'firered', ['firered-leafgreen']),
-  game('leafgreen', 'LeafGreen', 'legacy', 3, 'leafgreen', ['firered-leafgreen'])
+  game('firered', 'FireRed (GBA)', 'legacy', 3, 'firered', ['firered-leafgreen']),
+  game('leafgreen', 'LeafGreen (GBA)', 'legacy', 3, 'leafgreen', ['firered-leafgreen'])
 ];
 
 export const GAME_BY_ID = Object.fromEntries(GAMES.map((g) => [g.id, g]));

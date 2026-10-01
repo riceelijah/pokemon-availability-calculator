@@ -201,7 +201,7 @@ function speciesExistsIn(page, game) {
 }
 
 function partnerGames(game) {
-  return PDB_GAMES.filter((other) => other.id !== game.id && other.dex[0] === game.dex[0]);
+  return PDB_GAMES.filter((other) => other.id !== game.id && other.dex[0] === game.dex[0] && other.group === game.group);
 }
 
 function speciesStatus(form, game, page, dexBySlug) {

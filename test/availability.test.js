@@ -42,7 +42,7 @@ const FORMS = [
 
 test('every HOME-compatible game is a single selectable version', () => {
   const ids = GAMES.map((g) => g.id);
-  for (const id of ['sword', 'shield', 'scarlet', 'violet', 'legends-z-a', 'legends-arceus', 'brilliant-diamond', 'lets-go-eevee', 'go', 'champions', 'x', 'ultra-moon', 'black-2', 'crystal', 'heartgold', 'emerald', 'leafgreen']) {
+  for (const id of ['sword', 'shield', 'scarlet', 'violet', 'legends-z-a', 'legends-arceus', 'brilliant-diamond', 'lets-go-eevee', 'go', 'champions', 'x', 'ultra-moon', 'black-2', 'crystal', 'heartgold', 'emerald', 'leafgreen', 'firered-switch', 'leafgreen-switch']) {
     assert.ok(ids.includes(id), `${id} missing`);
   }
   assert.equal(new Set(ids).size, ids.length);

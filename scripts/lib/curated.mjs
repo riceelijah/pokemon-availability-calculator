@@ -58,7 +58,15 @@ export const ONE_PER_SAVE_FORMS = {
 };
 
 // Per-game availability PokémonDB can't tell us, applied after everything else.
+const NAVEL_ROCK = 'Navel Rock (Mystic Ticket, received after entering the Hall of Fame)';
+const BIRTH_ISLAND = 'Birth Island (Aurora Ticket, received after entering the Hall of Fame)';
+
 export const FORM_AVAILABILITY_OVERRIDES = {
+  lugia: { 'firered-switch': ['c', NAVEL_ROCK], 'leafgreen-switch': ['c', NAVEL_ROCK] },
+  'ho-oh': { 'firered-switch': ['c', NAVEL_ROCK], 'leafgreen-switch': ['c', NAVEL_ROCK] },
+  // In Gen 3, Deoxys takes Attack Forme in FireRed and Defense Forme in LeafGreen.
+  'deoxys-attack-forme': { 'firered-switch': ['c', BIRTH_ISLAND] },
+  'deoxys-defense-forme': { 'leafgreen-switch': ['c', BIRTH_ISLAND] },
   'ursaluna-bloodmoon': {
     scarlet: ['c', 'Timeless Woods, Kitakami (The Teal Mask)'],
     violet: ['c', 'Timeless Woods, Kitakami (The Teal Mask)']
