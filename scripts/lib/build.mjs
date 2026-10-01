@@ -44,6 +44,7 @@ export function buildDataset(sources) {
   }
 
   applyGameLists(forms, sources.gameLists, sources.homeIcons);
+  applySerebiiGameAudits(forms, sources.serebiiGames);
   applySvExclusives(forms, sources.svExclusives);
   fillBattleForms(forms, ['scarlet', 'violet', 'legends-z-a']);
   applyBreeding(forms, sources.species);
@@ -249,7 +250,9 @@ function flavorFor(form, page) {
 
 function formExistsIn(form, game, page) {
   const own = flavorFor(form, page);
-  if (own) {
+  // Cosmetic forms only get their own Pokédex-entry heading in some games, so
+  // they also exist wherever the species does.
+  if (own && (own.games.includes(game.pdb) || form.kind !== 'cosmetic')) {
     return own.games.includes(game.pdb);
   }
   if (form.group && game.gen < MIN_GEN_FOR_GROUP[form.group]) {
@@ -565,6 +568,59 @@ function applyGameLists(forms, gameLists, homeIcons) {
     }
   }
 }
+
+// Fills gaps in PokémonDB's location data (Dynamax Adventures, Ramanas Park,
+// Friend Safari, Pokéwalker…) from Serebii's per-game lists: a species is
+// obtainable in a version if it isn't on Serebii's unobtainable, transfer-only
+// or other-version-exclusive lists. Only applied when PokémonDB has no
+// location for it in any version, so PokémonDB's version splits still win.
+function applySerebiiGameAudits(forms, games = []) {
+  const defaults = new Map();
+  for (const form of forms) {
+    if (form.isDefault && !defaults.has(form.num)) defaults.set(form.num, form);
+  }
+  for (const audit of games) {
+    const blocked = new Set([...audit.unobtainable, ...audit.transferOnlyNums]);
+    const versionIds = Object.keys(audit.versions);
+    // Decide from PokémonDB's data as it was before this step changed anything.
+    const before = new Map([...defaults].map(([num, form]) => [num, Object.fromEntries(versionIds.map((id) => [id, form.avail[id]?.[0]]))]));
+    for (const gameId of versionIds) {
+      const otherExclusives = new Set(versionIds.filter((id) => id !== gameId).flatMap((id) => audit.exclusives[id]));
+      const ownExclusives = new Set(audit.exclusives[gameId]);
+      for (let num = 1; num <= audit.maxNum; num += 1) {
+        const form = defaults.get(num);
+        if (!form || blocked.has(num) || otherExclusives.has(num) || MYTHICAL.has(num)) continue;
+        if (form.avail[gameId]?.[0] === 'c') continue;
+        const partnerHasIt = versionIds.some((id) => id !== gameId && before.get(num)[id] === 'c');
+        if (partnerHasIt && !ownExclusives.has(num)) continue;
+        const method = audit.methodLists.find((list) => list.nums.includes(num));
+        form.avail[gameId] = ['c', method ? `${method.text} (per Serebii)` : audit.fallback];
+      }
+
+      // Evolutions and fossils PokémonDB lists that Serebii says can't happen
+      // in this game (e.g. no Moss Rock for Leafeon in HeartGold/SoulSilver).
+      for (const num of blocked) {
+        const form = defaults.get(num);
+        const entry = form?.avail[gameId];
+        if (entry?.[0] === 'c' && (FOSSILS.has(num) || /^Evolve /.test(entry[1]))) {
+          form.avail[gameId] = ['t', ''];
+        }
+      }
+
+      // PokémonDB lists fossil revivals and item evolutions in both versions;
+      // Serebii's exclusives are right that these are version-exclusive.
+      for (const num of otherExclusives) {
+        const form = defaults.get(num);
+        const entry = form?.avail[gameId];
+        if (entry?.[0] === 'c' && !ownExclusives.has(num) && (FOSSILS.has(num) || /^Evolve /.test(entry[1]))) {
+          form.avail[gameId] = ['t', ''];
+        }
+      }
+    }
+  }
+}
+
+const FOSSILS = new Set([138, 139, 140, 141, 142, 345, 346, 347, 348, 408, 409, 410, 411, 564, 565, 566, 567, 696, 697, 698, 699, 880, 881, 882, 883]);
 
 // Battle-only forms of Pokémon that only became obtainable through the
 // Serebii lists above (e.g. Terapagos' Terastal Form, Z-A Megas).

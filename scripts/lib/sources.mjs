@@ -1,7 +1,7 @@
 import { GAMES } from '../../src/games.js';
 import { parseHomeIcons } from './icons.mjs';
 import { PDB, parseAllPokemon, parseGameDex, parseSpeciesPage } from './pokemondb.mjs';
-import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseGoGeneration, parseIconList, parseSvExclusives, GAME_LIST_PAGES, SEREBII } from './serebii.mjs';
+import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseExclusivesByVersion, parseGoGeneration, parseIconList, parseSpeciesNumbers, parseSvExclusives, GAME_LIST_PAGES, SEREBII, SEREBII_GAME_AUDITS } from './serebii.mjs';
 
 export async function loadSources(fetchPage, { log = () => {} } = {}) {
   log('Fetching PokémonDB national list…');
@@ -51,7 +51,29 @@ export async function loadSources(fetchPage, { log = () => {} } = {}) {
     }
   }
 
+  log('Fetching per-game Serebii lists (unobtainable, exclusives, legendaries, gifts…)…');
+  const serebiiGames = [];
+  for (const audit of SEREBII_GAME_AUDITS) {
+    const page = (name) => fetchPage(`${SEREBII}/${audit.section}/${name}.shtml`);
+    const opts = { genderedIcons: Boolean(audit.genderedIcons) };
+    const transferOnly = [];
+    for (const name of audit.transferOnly || []) {
+      transferOnly.push(...parseSpeciesNumbers(await page(name), opts));
+    }
+    const methods = [];
+    for (const [name, text] of audit.methods) {
+      methods.push({ text, nums: parseSpeciesNumbers(await page(name), opts) });
+    }
+    serebiiGames.push({
+      ...audit,
+      unobtainable: parseSpeciesNumbers(await page('unobtainable'), opts),
+      transferOnlyNums: transferOnly,
+      exclusives: parseExclusivesByVersion(await page('exclusives'), audit.versions, opts),
+      methodLists: methods
+    });
+  }
+
   const homeIcons = parseHomeIcons(await fetchPage(`${SEREBII}/pokemonhome/depositablepokemon.shtml`));
 
-  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives, gameLists, homeIcons };
+  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives, gameLists, homeIcons, serebiiGames };
 }
