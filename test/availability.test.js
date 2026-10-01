@@ -126,3 +126,27 @@ test('Scarlet/Violet and Legends: Z-A specials from Serebii are obtainable', () 
   assert.equal(status('terapagos-stellar-form', 'scarlet'), 'b');
   assert.equal(status('zeraora-mega-zeraora', 'legends-z-a'), 'b');
 });
+
+test('cross-checks against Serebii hold (exclusives, trades, regional forms)', () => {
+  const data = JSON.parse(readFileSync(new URL('../data/pokemon.json', import.meta.url)));
+  const status = (id, game) => data.forms.find((f) => f.id === id)?.avail[game]?.[0];
+  // Kanto forms are not native to Alola even though their Alolan forms are.
+  assert.notEqual(status('rattata', 'sun'), 'c');
+  assert.notEqual(status('vulpix', 'moon'), 'c');
+  assert.equal(status('vulpix-alolan-vulpix', 'sun'), 'c');
+  // Version-exclusive species, and the in-game trade that crosses them over.
+  assert.equal(status('throh', 'sword'), 'c');
+  assert.equal(status('sawk', 'shield'), 'c');
+  // Form-level exclusives.
+  assert.notEqual(status('basculin-blue-striped-form', 'sword'), 'c');
+  assert.notEqual(status('shellos-east-sea', 'omega-ruby'), 'c');
+  assert.equal(status('shellos-west-sea', 'omega-ruby'), 'c');
+  // X/Y fossils are trade-only in ORAS; evolution-item exclusives in Sword/Shield.
+  assert.notEqual(status('tyrunt', 'omega-ruby'), 'c');
+  assert.notEqual(status('appletun', 'sword'), 'c');
+  // Gaps PokémonDB has no location for.
+  assert.equal(status('bonsly', 'brilliant-diamond'), 'c');
+  assert.equal(status('mewtwo', 'sword'), 'c');
+  assert.equal(status('clefairy', 'x'), 'c');
+  assert.equal(status('lurantis', 'ultra-moon'), 'c');
+});
