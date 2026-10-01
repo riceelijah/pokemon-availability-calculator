@@ -150,3 +150,14 @@ test('cross-checks against Serebii hold (exclusives, trades, regional forms)', (
   assert.equal(status('clefairy', 'x'), 'c');
   assert.equal(status('lurantis', 'ultra-moon'), 'c');
 });
+
+test('Pokémon HOME gifts are a selectable source, one per account', () => {
+  assert.ok(GAMES.some((g) => g.id === 'home' && g.group === 'direct'));
+  assert.equal(GAMES.find((g) => g.id === 'firered-switch').group, 'direct');
+  const data = JSON.parse(readFileSync(new URL('../data/pokemon.json', import.meta.url)));
+  const form = (id) => data.forms.find((f) => f.id === id);
+  assert.equal(form('celebi').avail.home[0], 'c');
+  assert.ok(form('celebi').onePerSave.includes('home'));
+  assert.equal(form('magearna-original-color').avail.home[0], 'c');
+  assert.equal(form('zeraora').avail.home[0], 'e', 'ended gift is a past event');
+});

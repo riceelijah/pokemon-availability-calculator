@@ -1,7 +1,7 @@
 import { GAMES } from '../../src/games.js';
 import { parseHomeIcons } from './icons.mjs';
 import { PDB, parseAllPokemon, parseGameDex, parseSpeciesPage } from './pokemondb.mjs';
-import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseExclusivesByVersion, parseGoGeneration, parseIconList, parseSpeciesNumbers, parseSvExclusives, GAME_LIST_PAGES, SEREBII, SEREBII_GAME_AUDITS } from './serebii.mjs';
+import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseExclusivesByVersion, parseGoGeneration, parseHomeGifts, parseIconList, parseSpeciesNumbers, parseSvExclusives, GAME_LIST_PAGES, SEREBII, SEREBII_GAME_AUDITS } from './serebii.mjs';
 
 export async function loadSources(fetchPage, { log = () => {} } = {}) {
   log('Fetching PokémonDB national list…');
@@ -73,7 +73,9 @@ export async function loadSources(fetchPage, { log = () => {} } = {}) {
     });
   }
 
+  const homeGifts = parseHomeGifts(await fetchPage(`${SEREBII}/pokemonhome/giftpokemon.shtml`));
+
   const homeIcons = parseHomeIcons(await fetchPage(`${SEREBII}/pokemonhome/depositablepokemon.shtml`));
 
-  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives, gameLists, homeIcons, serebiiGames };
+  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives, gameLists, homeIcons, serebiiGames, homeGifts };
 }

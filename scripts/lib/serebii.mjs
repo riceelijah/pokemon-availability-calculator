@@ -179,3 +179,17 @@ export function parseExclusivesByVersion(html, versions, options = {}) {
   });
   return out;
 }
+
+// Pokémon HOME gift distributions: one block per gift (<h2> title, release
+// date, a sentence on how to qualify, and the Pokémon given).
+export function parseHomeGifts(html) {
+  const blocks = html.split(/<h2><b>/).slice(1);
+  return blocks.map((block) => {
+    const title = decodeEntities(block.slice(0, block.indexOf('</b>'))).trim();
+    const date = stripTags(block.match(/<b>Release Date<\/b>:([^<]*)/)?.[1] || '').trim();
+    const about = stripTags(block.match(/<p>([\s\S]*?)<p>/)?.[1] || '');
+    const pokemon = [...block.matchAll(/src="\/(?:pokemonhome\/pokemon\/small|Shiny\/home)\/(\d{3,4})(-[a-z0-9]+)?\.png"/g)]
+      .map((m) => ({ num: Number(m[1]), code: (m[2] || '').slice(1) }));
+    return { title, date, about, pokemon: dedupe(pokemon.map((p) => ({ ...p, name: '' }))) };
+  }).filter((gift) => gift.pokemon.length);
+}
