@@ -61,8 +61,8 @@ export async function loadSources(fetchPage, { log = () => {} } = {}) {
       transferOnly.push(...parseSpeciesNumbers(await page(name), opts));
     }
     const methods = [];
-    for (const [name, text] of audit.methods) {
-      methods.push({ text, nums: parseSpeciesNumbers(await page(name), opts) });
+    for (const [name, text, flags = {}] of audit.methods) {
+      methods.push({ text, ...flags, nums: parseSpeciesNumbers(await page(name), opts) });
     }
     serebiiGames.push({
       ...audit,

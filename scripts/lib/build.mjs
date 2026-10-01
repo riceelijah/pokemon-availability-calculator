@@ -4,6 +4,7 @@ import { iconCode } from './icons.mjs';
 import {
   CHANGEABLE_SPECIES,
   FORM_AVAILABILITY_OVERRIDES,
+  FORM_VERSION_EXCLUSIVES,
   COSMETIC_FORMS,
   EXTRA_BATTLE_FORMS,
   LEGENDARY,
@@ -50,6 +51,9 @@ export function buildDataset(sources) {
   applyBreeding(forms, sources.species);
   for (const form of forms) {
     Object.assign(form.avail, FORM_AVAILABILITY_OVERRIDES[form.id]);
+    for (const [, other] of Object.entries(FORM_VERSION_EXCLUSIVES[form.id] || {})) {
+      if (form.avail[other]?.[0] === 'c') form.avail[other] = ['t', ''];
+    }
   }
   applyGo(forms, sources.go);
   const champions = applyChampions(forms, sources);
@@ -591,9 +595,16 @@ function applySerebiiGameAudits(forms, games = []) {
         const form = defaults.get(num);
         if (!form || blocked.has(num) || otherExclusives.has(num) || MYTHICAL.has(num)) continue;
         if (form.avail[gameId]?.[0] === 'c') continue;
-        const partnerHasIt = versionIds.some((id) => id !== gameId && before.get(num)[id] === 'c');
-        if (partnerHasIt && !ownExclusives.has(num)) continue;
+        // Serebii counts a species as available when only its regional form
+        // is (e.g. Alolan Rattata in Sun), so leave the standard form alone
+        // in games that use the regional form in either version.
+        const regionalHere = forms.some((f) => f.num === num && f.kind === 'regional' && versionIds.some((id) => f.avail[id]?.[0] === 'c'));
+        if (regionalHere) continue;
         const method = audit.methodLists.find((list) => list.nums.includes(num));
+        // In-game trades (e.g. Throh in Sword via Circhester) give the other
+        // version's exclusive, so they apply even when PokémonDB splits it.
+        const partnerHasIt = versionIds.some((id) => id !== gameId && before.get(num)[id] === 'c');
+        if (partnerHasIt && !ownExclusives.has(num) && !method?.trade) continue;
         form.avail[gameId] = ['c', method ? `${method.text} (per Serebii)` : audit.fallback];
       }
 
@@ -612,7 +623,7 @@ function applySerebiiGameAudits(forms, games = []) {
       for (const num of otherExclusives) {
         const form = defaults.get(num);
         const entry = form?.avail[gameId];
-        if (entry?.[0] === 'c' && !ownExclusives.has(num) && (FOSSILS.has(num) || /^Evolve /.test(entry[1]))) {
+        if (entry?.[0] === 'c' && !ownExclusives.has(num) && (FOSSILS.has(num) || (audit.itemEvolutionExclusives && /^Evolve /.test(entry[1])))) {
           form.avail[gameId] = ['t', ''];
         }
       }

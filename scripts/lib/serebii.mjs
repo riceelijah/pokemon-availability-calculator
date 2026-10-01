@@ -105,10 +105,10 @@ export const GAME_LIST_PAGES = {
 // `versions` maps our game ids to text in Serebii's "Exclusive to …" headings.
 export const SEREBII_GAME_AUDITS = [
   {
-    section: 'swordshield', maxNum: 898,
+    section: 'swordshield', maxNum: 898, itemEvolutionExclusives: true,
     versions: { sword: ['Sword'], shield: ['Shield'] },
     transferOnly: ['transferonly'],
-    methods: [['legendary', 'Legendary encounter'], ['dynamaxadventurespokemon', 'Dynamax Adventures (The Crown Tundra)'], ['gift', 'Gift Pokémon'], ['ingametrade', 'In-game trade']],
+    methods: [['legendary', 'Legendary encounter'], ['dynamaxadventurespokemon', 'Dynamax Adventures (The Crown Tundra)'], ['gift', 'Gift Pokémon'], ['ingametrade', 'In-game trade', { trade: true }]],
     fallback: 'Obtainable in-game per Serebii (e.g. Max Raid Battles); PokémonDB lists no location'
   },
   {
