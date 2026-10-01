@@ -113,3 +113,16 @@ test('generated dataset covers every form and game', () => {
   assert.ok(data.forms.some((f) => f.champions?.recruit?.length), 'some forms are recruitable in Champions');
   assert.ok(data.forms.some((f) => f.onePerSave?.length), 'some forms are one per save');
 });
+
+test('Scarlet/Violet and Legends: Z-A specials from Serebii are obtainable', () => {
+  const data = JSON.parse(readFileSync(new URL('../data/pokemon.json', import.meta.url)));
+  const status = (id, game) => data.forms.find((f) => f.id === id)?.avail[game]?.[0];
+  assert.equal(status('latias', 'scarlet'), 'c', 'Snacksworth legendary');
+  assert.equal(status('kyurem', 'violet'), 'c', 'Snacksworth legendary');
+  assert.equal(status('zygarde-50-forme', 'legends-z-a'), 'c');
+  assert.equal(status('floette-eternal-flower', 'legends-z-a'), 'c');
+  assert.equal(status('furfrou-pharaoh-trim', 'legends-z-a'), 'c');
+  assert.equal(status('ogerpon-cornerstone-mask', 'scarlet'), 'c');
+  assert.equal(status('terapagos-stellar-form', 'scarlet'), 'b');
+  assert.equal(status('zeraora-mega-zeraora', 'legends-z-a'), 'b');
+});

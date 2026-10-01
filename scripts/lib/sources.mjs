@@ -1,6 +1,7 @@
 import { GAMES } from '../../src/games.js';
+import { parseHomeIcons } from './icons.mjs';
 import { PDB, parseAllPokemon, parseGameDex, parseSpeciesPage } from './pokemondb.mjs';
-import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseGoGeneration, parseSvExclusives, SEREBII } from './serebii.mjs';
+import { parseChampionsAvailable, parseChampionsRoster, parseChampionsRosterIndex, parseGoGeneration, parseIconList, parseSvExclusives, GAME_LIST_PAGES, SEREBII } from './serebii.mjs';
 
 export async function loadSources(fetchPage, { log = () => {} } = {}) {
   log('Fetching PokémonDB national list…');
@@ -41,5 +42,16 @@ export async function loadSources(fetchPage, { log = () => {} } = {}) {
 
   const svExclusives = parseSvExclusives(await fetchPage(`${SEREBII}/scarletviolet/exclusives.shtml`));
 
-  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives };
+  log('Fetching Scarlet/Violet and Legends: Z-A lists from Serebii…');
+  const gameLists = {};
+  for (const [gameId, pages] of Object.entries(GAME_LIST_PAGES)) {
+    gameLists[gameId] = [];
+    for (const page of pages) {
+      gameLists[gameId].push({ ...page, pokemon: parseIconList(await fetchPage(`${SEREBII}/${page.path}`)) });
+    }
+  }
+
+  const homeIcons = parseHomeIcons(await fetchPage(`${SEREBII}/pokemonhome/depositablepokemon.shtml`));
+
+  return { all, species, gameDex, championsAvailable, championsTransferOnly, rosters, go, svExclusives, gameLists, homeIcons };
 }

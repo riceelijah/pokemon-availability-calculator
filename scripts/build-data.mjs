@@ -10,8 +10,7 @@ import path from 'node:path';
 import { createFetcher } from './lib/fetch-cache.mjs';
 import { loadSources } from './lib/sources.mjs';
 import { buildDataset } from './lib/build.mjs';
-import { ICON_COLUMNS, ICON_SIZE, buildIconSheet, parseHomeIcons } from './lib/icons.mjs';
-import { SEREBII } from './lib/serebii.mjs';
+import { ICON_COLUMNS, ICON_SIZE, buildIconSheet } from './lib/icons.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const fetchPage = createFetcher({
@@ -23,8 +22,7 @@ const sources = await loadSources(fetchPage, { log: console.log });
 const dataset = buildDataset(sources);
 
 console.log('Building icon sprite sheet from Serebii HOME icons…');
-const homeRows = parseHomeIcons(await fetchPage(`${SEREBII}/pokemonhome/depositablepokemon.shtml`));
-const iconIndex = await buildIconSheet(dataset.formsInternal, homeRows, {
+const iconIndex = await buildIconSheet(dataset.formsInternal, sources.homeIcons, {
   cacheDir: path.join(root, '.cache', 'icons'),
   outFile: path.join(root, 'data', 'icons.webp'),
   log: console.log
