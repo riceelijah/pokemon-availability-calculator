@@ -7,29 +7,100 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main>
-      <h1>Pokémon Availability Calculator</h1>
-      <p>Select the games you own to see which Pokémon you can obtain and where.</p>
+    <div class="layout">
+      <aside class="sidebar" aria-labelledby="games-heading">
+        <div class="sidebar-head">
+          <h2 id="games-heading">Your games</h2>
+          <p class="muted" id="games-count">0 selected</p>
+          <div class="button-row">
+            <button type="button" data-select="all">All</button>
+            <button type="button" data-select="direct">Switch &amp; mobile</button>
+            <button type="button" data-select="none">Clear</button>
+          </div>
+        </div>
+        <div id="game-list" class="game-list"></div>
+      </aside>
 
-      <section aria-labelledby="games-heading">
-        <h2 id="games-heading">Owned Games</h2>
-        <div id="game-list"></div>
-      </section>
+      <main class="main">
+        <header class="page-head">
+          <h1>Pokémon Availability Calculator</h1>
+          <p class="muted">
+            Pick the games you own in the sidebar to see every Pokémon form you can obtain, where to find it,
+            and which forms are one per save or usable in Pokémon Champions. Every game that can move Pokémon
+            into Pokémon HOME is listed.
+          </p>
+        </header>
 
-      <section aria-labelledby="results-heading">
-        <h2 id="results-heading">Obtainable Pokémon</h2>
-        <p id="result-summary">Choose one or more games to begin.</p>
-        <table id="results-table" hidden>
-          <thead>
-            <tr>
-              <th>Pokémon</th>
-              <th>Where to Find</th>
-            </tr>
-          </thead>
-          <tbody id="results-body"></tbody>
-        </table>
-      </section>
-    </main>
+        <section class="toolbar" aria-label="Filters">
+          <label class="search">
+            <span class="visually-hidden">Search Pokémon</span>
+            <input id="search" type="search" placeholder="Search by name or Pokédex number" autocomplete="off" />
+          </label>
+
+          <div class="filter-group" role="radiogroup" aria-label="Show">
+            <label><input type="radio" name="show" value="obtainable" checked /> Obtainable</label>
+            <label><input type="radio" name="show" value="missing" /> Not obtainable</label>
+            <label><input type="radio" name="show" value="all" /> All forms</label>
+          </div>
+
+          <details class="filter-more">
+            <summary>Form types &amp; labels</summary>
+            <div class="filter-columns">
+              <fieldset>
+                <legend>Include form types</legend>
+                <label><input type="checkbox" name="kind" value="default" checked /> Standard</label>
+                <label><input type="checkbox" name="kind" value="regional" checked /> Regional forms</label>
+                <label><input type="checkbox" name="kind" value="alternate" checked /> Alternate forms</label>
+                <label><input type="checkbox" name="kind" value="cosmetic" checked /> Cosmetic forms</label>
+                <label><input type="checkbox" name="kind" value="battle" checked /> Battle-only forms</label>
+                <label><input type="checkbox" name="kind" value="special" checked /> Event / special forms</label>
+              </fieldset>
+              <fieldset>
+                <legend>Only show Pokémon that are</legend>
+                <label><input type="checkbox" id="filter-one-per-save" /> 1 per save in a selected game</label>
+                <label><input type="checkbox" id="filter-champions-usable" /> Usable in Champions</label>
+                <label><input type="checkbox" id="filter-champions-recruitable" /> Recruitable in Champions</label>
+              </fieldset>
+              <fieldset>
+                <legend>Counting</legend>
+                <label><input type="checkbox" id="include-events" /> Count event distributions as obtainable</label>
+              </fieldset>
+            </div>
+          </details>
+        </section>
+
+        <section aria-labelledby="results-heading">
+          <div class="results-head">
+            <h2 id="results-heading">Results</h2>
+            <p id="result-summary" class="summary" aria-live="polite">Loading Pokémon data…</p>
+          </div>
+          <ul class="legend" aria-label="Label legend">
+            <li><span class="badge badge-save">1 per save</span> only one can be obtained per save file in that game</li>
+            <li><span class="badge badge-usable">Champions</span> usable in Pokémon Champions</li>
+            <li><span class="badge badge-recruit">Recruitable</span> can be recruited in Champions' Recruit Ranch</li>
+          </ul>
+          <div class="table-wrap">
+            <table id="results-table" hidden>
+              <thead>
+                <tr>
+                  <th scope="col">No.</th>
+                  <th scope="col">Pokémon</th>
+                  <th scope="col">Labels</th>
+                  <th scope="col">Where to find</th>
+                </tr>
+              </thead>
+              <tbody id="results-body"></tbody>
+            </table>
+          </div>
+          <button type="button" id="show-more" class="show-more" hidden>Show more</button>
+        </section>
+
+        <footer class="page-foot muted" id="data-credit">
+          Location and form data from <a href="https://pokemondb.net/pokedex/">Pokémon Database</a>;
+          Pokémon Champions and Pokémon GO rosters from <a href="https://www.serebii.net/">Serebii.net</a>.
+        </footer>
+      </main>
+    </div>
 
     <script type="module" src="./app.js"></script>
   </body>

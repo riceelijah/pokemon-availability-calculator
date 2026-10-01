@@ -1,10 +1,11 @@
 {
   "name": "pokemon-availability-calculator",
   "version": "1.0.0",
-  "description": "Simple web app to calculate obtainable Pokémon by owned games",
+  "description": "Check which Pokémon forms you can obtain from the games you own",
   "type": "module",
   "scripts": {
     "start": "python3 -m http.server 4173",
+    "build-data": "node scripts/build-data.mjs",
     "test": "node --test"
   },
   "repository": {
