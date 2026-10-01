@@ -75,3 +75,28 @@ export function parseSvExclusives(html) {
   }
   return { scarlet: parse(html.slice(scarletAt, violetAt)), violet: parse(html.slice(violetAt)) };
 }
+
+// Generic Serebii game page: every Pokémon icon on the page as {num, code}.
+export function parseIconList(html) {
+  const pattern = /src="\/(?:scarletviolet\/pokemon|pokedex-sv\/icon|legendsz-a\/pokemon)\/(?:new\/)?(?:small\/)?(\d{3,4})(-[a-z0-9]+)?\.png"/g;
+  return dedupe([...html.matchAll(pattern)].map((m) => ({ num: Number(m[1]), code: (m[2] || '').slice(1), name: '' })));
+}
+
+// Serebii pages that say how Pokémon are obtained in games PokémonDB has no
+// location data for yet. Order matters: later lists take precedence.
+export const GAME_LIST_PAGES = {
+  scarlet: [
+    { path: 'scarletviolet/pokemonnotindex.shtml', text: 'Obtainable outside the Pokédex' },
+    { path: 'scarletviolet/giftpokemon.shtml', text: 'Gift Pokémon' },
+    { path: 'scarletviolet/legendary.shtml', text: 'Legendary / special encounter' },
+    { path: 'scarletviolet/snacksworthlegendary.shtml', text: 'Snacksworth legendary (The Indigo Disk, Blueberry Academy)' },
+    { path: 'scarletviolet/transferonly.shtml', transferOnly: true }
+  ],
+  'legends-z-a': [
+    { path: 'legendsz-a/availablepokemon.shtml', text: 'Available in Lumiose City' },
+    { path: 'legendsz-a/hyperspacepokedex.shtml', text: 'Hyperspace Lumiose (Mega Dimension DLC)' },
+    { path: 'legendsz-a/giftpokemon.shtml', text: 'Gift Pokémon' },
+    { path: 'legendsz-a/legendary.shtml', text: 'Legendary / Mythical encounter' },
+    { path: 'legendsz-a/transferonly.shtml', transferOnly: true }
+  ]
+};

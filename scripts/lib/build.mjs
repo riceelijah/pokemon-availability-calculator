@@ -1,5 +1,6 @@
 import { GAMES } from '../../src/games.js';
 import { slugify } from './html.mjs';
+import { iconCode } from './icons.mjs';
 import {
   CHANGEABLE_SPECIES,
   FORM_AVAILABILITY_OVERRIDES,
@@ -42,7 +43,9 @@ export function buildDataset(sources) {
     }
   }
 
+  applyGameLists(forms, sources.gameLists, sources.homeIcons);
   applySvExclusives(forms, sources.svExclusives);
+  fillBattleForms(forms, ['scarlet', 'violet', 'legends-z-a']);
   applyBreeding(forms, sources.species);
   for (const form of forms) {
     Object.assign(form.avail, FORM_AVAILABILITY_OVERRIDES[form.id]);
@@ -521,6 +524,63 @@ function matchGoRow(candidates, row) {
   }
   const wanted = normaliseFormName(row.note, candidates[0].species);
   return candidates.filter((f) => f.form && normaliseFormName(f.form, f.species) === wanted).slice(0, 1);
+}
+
+// Serebii lists for Scarlet/Violet and Legends: Z-A (legendaries, gifts,
+// Snacksworth, Hyperspace Lumiose, transfer-only…), matched by icon code.
+function applyGameLists(forms, gameLists, homeIcons) {
+  const byKey = new Map();
+  for (const form of forms) {
+    const code = iconCode(form, homeIcons);
+    if (code === null) continue;
+    const key = `${form.num}-${code}`;
+    if (!byKey.has(key)) byKey.set(key, []);
+    byKey.get(key).push(form);
+  }
+  const byNum = groupByNum(forms);
+  const formsFor = (row) => {
+    if (row.code) {
+      return byKey.get(`${row.num}-${row.code}`) || [];
+    }
+    // A plain entry covers the species' default form plus the non-regional
+    // forms that come with it (form changes, genders, cosmetic variants).
+    return (byNum.get(row.num) || []).filter((f) => f.isDefault || f.kind === 'alternate' || f.kind === 'cosmetic');
+  };
+
+  for (const [gameId, pages] of Object.entries(gameLists)) {
+    const targets = gameId === 'scarlet' ? ['scarlet', 'violet'] : [gameId];
+    for (const page of pages) {
+      for (const row of page.pokemon) {
+        for (const form of formsFor(row)) {
+          for (const target of targets) {
+            const current = form.avail[target];
+            if (page.transferOnly) {
+              if (!current || current[0] === 'c') form.avail[target] = ['t', ''];
+            } else if (!current || current[0] !== 'c' || /no location details yet/.test(current[1]) || /legendary/i.test(page.text)) {
+              form.avail[target] = ['c', page.text];
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Battle-only forms of Pokémon that only became obtainable through the
+// Serebii lists above (e.g. Terapagos' Terastal Form, Z-A Megas).
+function fillBattleForms(forms, gameIds) {
+  const byNum = groupByNum(forms);
+  for (const form of forms) {
+    if (form.kind !== 'battle' || /^(Gigantamax|Primal)/.test(form.form)) continue;
+    const isMega = /^Mega /.test(form.form);
+    const base = (byNum.get(form.num) || []).find((f) => f.isDefault || f.kind === 'default');
+    for (const gameId of gameIds) {
+      if (form.avail[gameId] || base?.avail[gameId]?.[0] !== 'c') continue;
+      // Megas only exist in Legends: Z-A among these games.
+      if (isMega && gameId !== 'legends-z-a') continue;
+      form.avail[gameId] = ['b', 'Battle-only form'];
+    }
+  }
 }
 
 // Scarlet/Violet version exclusives from Serebii.
