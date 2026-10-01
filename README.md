@@ -34,6 +34,7 @@ Sources:
 
 - [Pokémon Database](https://pokemondb.net/pokedex/) — the form list, per-version "Where to find" locations, game Pokédexes and egg groups.
 - [Serebii.net](https://www.serebii.net/) — Pokémon Champions usable / transfer-only Pokémon and Recruit Ranch rosters, the Pokémon GO roster, and Scarlet/Violet version exclusives (PokémonDB has none of these).
+- Serebii's Pokémon HOME icons, packed into one sprite sheet (`data/icons.webp`) at build time so the site doesn't hotlink.
 - `scripts/lib/curated.mjs` — hand-kept facts: legendary/mythical lists, cosmetic forms PokémonDB only mentions in prose, and one-per-save special forms.
 
 Known limitations: PokémonDB has no location details yet for Scarlet/Violet or Legends: Z-A, so those use "in the game's Pokédex"; per-form availability for cosmetic forms follows the species; gender-only visual differences are not split out.

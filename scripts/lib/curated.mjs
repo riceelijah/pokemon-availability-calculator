@@ -53,7 +53,16 @@ export const ONE_PER_SAVE_FORMS = {
   'pikachu-ph-d': ['omega-ruby', 'alpha-sapphire'],
   'pikachu-libre': ['omega-ruby', 'alpha-sapphire'],
   'greninja-ash-greninja': ['sun', 'moon', 'ultra-sun', 'ultra-moon'],
-  'floette-eternal-flower': ['legends-z-a']
+  'floette-eternal-flower': ['legends-z-a'],
+  'ursaluna-bloodmoon': ['scarlet', 'violet']
+};
+
+// Per-game availability PokémonDB can't tell us, applied after everything else.
+export const FORM_AVAILABILITY_OVERRIDES = {
+  'ursaluna-bloodmoon': {
+    scarlet: ['c', 'Timeless Woods, Kitakami (The Teal Mask)'],
+    violet: ['c', 'Timeless Woods, Kitakami (The Teal Mask)']
+  }
 };
 
 // Cosmetic forms PokémonDB only mentions in prose (or not at all). Every one

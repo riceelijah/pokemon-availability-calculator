@@ -2,6 +2,7 @@ import { GAMES } from '../../src/games.js';
 import { slugify } from './html.mjs';
 import {
   CHANGEABLE_SPECIES,
+  FORM_AVAILABILITY_OVERRIDES,
   COSMETIC_FORMS,
   EXTRA_BATTLE_FORMS,
   LEGENDARY,
@@ -43,6 +44,9 @@ export function buildDataset(sources) {
 
   applySvExclusives(forms, sources.svExclusives);
   applyBreeding(forms, sources.species);
+  for (const form of forms) {
+    Object.assign(form.avail, FORM_AVAILABILITY_OVERRIDES[form.id]);
+  }
   applyGo(forms, sources.go);
   const champions = applyChampions(forms, sources);
 
@@ -58,7 +62,9 @@ export function buildDataset(sources) {
       go: 'https://www.serebii.net/pokemongo/'
     },
     champions,
-    forms: forms.map(serialiseForm)
+    forms: forms.map(serialiseForm),
+    // Full form records (with species slug etc.), used by later build steps; not written out.
+    formsInternal: forms
   };
 }
 
@@ -537,7 +543,16 @@ function applySvExclusives(forms, exclusives) {
   for (const [exclusiveTo, other] of [['scarlet', 'violet'], ['violet', 'scarlet']]) {
     for (const row of exclusives[exclusiveTo] || []) {
       for (const form of codeToForm(byNum.get(row.num) || [], row.code)) {
+        // PokémonDB's DLC Pokédex pages show default sprites, so regional
+        // forms found in the DLC (e.g. Alolan Vulpix) are only known from here.
+        if (form.kind === 'regional' && form.avail[exclusiveTo]?.[0] !== 'c') {
+          form.avail[exclusiveTo] = ['c', `${exclusiveTo === 'scarlet' ? 'Scarlet' : 'Violet'} exclusive (PokémonDB has no location details yet)`];
+        }
         const entry = form.avail[other];
+        if (!entry && form.kind === 'regional') {
+          form.avail[other] = ['t', ''];
+          continue;
+        }
         if (entry && (entry[0] === 'c' || entry[0] === 'b')) {
           form.avail[other] = ['t', ''];
         }

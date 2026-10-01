@@ -62,3 +62,36 @@ function decodeLatin1OrUtf8(buffer) {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+// Binary download with an on-disk cache. Returns the file path, or null on 404.
+export async function fetchBinaryCached(url, file, { refresh = false } = {}) {
+  if (!refresh) {
+    try {
+      await readFile(file);
+      return file;
+    } catch {
+      // not cached yet
+    }
+  }
+  const missing = `${file}.404`;
+  if (!refresh) {
+    try {
+      await readFile(missing);
+      return null;
+    } catch {
+      // not known missing
+    }
+  }
+  await mkdir(path.dirname(file), { recursive: true });
+  const response = await fetch(url, { headers: { 'user-agent': USER_AGENT } });
+  await sleep(150);
+  if (response.status === 404) {
+    await writeFile(missing, '');
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status} for ${url}`);
+  }
+  await writeFile(file, Buffer.from(await response.arrayBuffer()));
+  return file;
+}

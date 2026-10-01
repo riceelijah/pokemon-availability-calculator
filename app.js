@@ -136,6 +136,23 @@ function badge(text, className, title) {
   return span;
 }
 
+const ICON_DISPLAY = 40;
+
+function renderIcon(form) {
+  const icon = document.createElement('span');
+  icon.className = 'icon';
+  icon.setAttribute('aria-hidden', 'true');
+  const sheet = dataset.icons;
+  if (sheet && Number.isInteger(form.icon)) {
+    const col = form.icon % sheet.columns;
+    const row = Math.floor(form.icon / sheet.columns);
+    icon.style.backgroundImage = `url(${sheet.file})`;
+    icon.style.backgroundSize = `${sheet.columns * ICON_DISPLAY}px auto`;
+    icon.style.backgroundPosition = `-${col * ICON_DISPLAY}px -${row * ICON_DISPLAY}px`;
+  }
+  return icon;
+}
+
 function gameName(id) {
   return GAMES.find((g) => g.id === id)?.name ?? id;
 }
@@ -152,16 +169,21 @@ function renderRow(result) {
   num.textContent = `#${String(form.num).padStart(4, '0')}`;
 
   const name = document.createElement('td');
-  name.className = 'cell-name';
+  const nameWrap = document.createElement('div');
+  nameWrap.className = 'cell-name';
+  nameWrap.appendChild(renderIcon(form));
+  name.appendChild(nameWrap);
+  const nameText = document.createElement('div');
   const strong = document.createElement('strong');
   strong.textContent = form.species;
-  name.appendChild(strong);
+  nameText.appendChild(strong);
   if (form.form) {
     const formName = document.createElement('span');
     formName.className = 'form-name';
     formName.textContent = form.form;
-    name.appendChild(formName);
+    nameText.appendChild(formName);
   }
+  nameWrap.appendChild(nameText);
 
   const labels = document.createElement('td');
   labels.className = 'cell-labels';

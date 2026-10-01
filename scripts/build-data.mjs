@@ -10,6 +10,8 @@ import path from 'node:path';
 import { createFetcher } from './lib/fetch-cache.mjs';
 import { loadSources } from './lib/sources.mjs';
 import { buildDataset } from './lib/build.mjs';
+import { ICON_COLUMNS, ICON_SIZE, buildIconSheet, parseHomeIcons } from './lib/icons.mjs';
+import { SEREBII } from './lib/serebii.mjs';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const fetchPage = createFetcher({
@@ -19,6 +21,21 @@ const fetchPage = createFetcher({
 
 const sources = await loadSources(fetchPage, { log: console.log });
 const dataset = buildDataset(sources);
+
+console.log('Building icon sprite sheet from Serebii HOME icons…');
+const homeRows = parseHomeIcons(await fetchPage(`${SEREBII}/pokemonhome/depositablepokemon.shtml`));
+const iconIndex = await buildIconSheet(dataset.formsInternal, homeRows, {
+  cacheDir: path.join(root, '.cache', 'icons'),
+  outFile: path.join(root, 'data', 'icons.webp'),
+  log: console.log
+});
+for (const form of dataset.forms) {
+  if (form.id in iconIndex) {
+    form.icon = iconIndex[form.id];
+  }
+}
+dataset.icons = { file: 'data/icons.webp', size: ICON_SIZE, columns: ICON_COLUMNS };
+delete dataset.formsInternal;
 
 await mkdir(path.join(root, 'data'), { recursive: true });
 await writeFile(path.join(root, 'data', 'pokemon.json'), JSON.stringify(dataset));

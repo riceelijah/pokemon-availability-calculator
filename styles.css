@@ -48,6 +48,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   background: var(--bg);
@@ -323,8 +327,21 @@ tbody tr.is-unavailable td {
   white-space: nowrap;
 }
 
+.cell-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .cell-name strong {
   display: block;
+}
+
+.icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  background-repeat: no-repeat;
 }
 
 .cell-name .form-name {
