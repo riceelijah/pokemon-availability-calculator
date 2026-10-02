@@ -1,6 +1,6 @@
 # pokemon-availability-calculator
 
-Pick the Pokémon games you own (in the sidebar) and see every Pokémon **form** you can obtain, where to find it, and which ones are one per save or usable/recruitable in Pokémon Champions.
+Pick the Pokémon games you own (in the sidebar) and see every Pokémon **form** you can obtain, where to find it, and which ones are one per save or usable/recruitable in Pokémon Champions.  
 Web Interface Here: https://riceelijah.github.io/pokemon-availability-calculator/
 ## Features
 
